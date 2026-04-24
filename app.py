@@ -48,12 +48,27 @@ BALANCE_WARN = 20.0
 CV_OK        = 5.0
 CV_WARN      = 10.0
 
-# Colores
+# Colores — dark mode
 AZUL   = "#1F4E79"
-AZUL_C = "#2E75B6"
-VERDE  = "#375623"
-NARANJA= "#E26B0A"
-ROJO   = "#C00000"
+AZUL_C = "#4DA6FF"
+VERDE  = "#5DBB63"
+NARANJA= "#F4A31E"
+ROJO   = "#FF4C4C"
+
+BG_DARK   = "#0E1117"
+BG_CARD   = "#1E2130"
+TXT_WHITE = "#FAFAFA"
+
+PLOTLY_LAYOUT = dict(
+    plot_bgcolor =BG_DARK,
+    paper_bgcolor=BG_DARK,
+    font         =dict(family="Arial", color=TXT_WHITE),
+    xaxis        =dict(gridcolor="#2A2F45", tickfont=dict(color=TXT_WHITE),
+                       title_font=dict(color=TXT_WHITE)),
+    yaxis        =dict(gridcolor="#2A2F45", tickfont=dict(color=TXT_WHITE),
+                       title_font=dict(color=TXT_WHITE)),
+    legend       =dict(bgcolor=BG_CARD, font=dict(color=TXT_WHITE)),
+)
 
 MAPEO_UD_RUEDA = {
     (1,1):2,(1,2):2,(1,3):1,(1,4):1,(1,5):4,(1,6):4,(1,7):3,(1,8):3,
@@ -230,9 +245,8 @@ que explica los valores mayores a 1.0 m/s² que aparecen aquí.
             textposition="outside",
         ))
 
-    fig.update_layout(
-        barmode="group", height=380, plot_bgcolor="white",
-        yaxis=dict(title="Distancia de parada (m)", gridcolor="#e0e0e0"),
+    fig.update_layout(**PLOTLY_LAYOUT, barmode="group", height=380, plot_bgcolor=BG_DARK,
+        yaxis=dict(title="Distancia de parada (m)", gridcolor="#2A2F45"),
         xaxis_title="Condición de carga",
         font=dict(family="Arial"), legend_title="",
         title="Distancia de parada — freno neumático puro (con tₑ = 3 s)"
@@ -328,7 +342,7 @@ def seccion_balance(df, bal_ok, bal_warn):
                         rueda  = int(rs["rueda"]) if rs["rueda"] else "?"
                         st.markdown(
                             f"<div style='border-left:4px solid {hx};padding:6px 10px;"
-                            f"margin:5px 0;border-radius:4px;background:#fafafa;font-size:.9rem'>"
+                            f"margin:5px 0;border-radius:4px;background:{BG_CARD};font-size:.9rem;color:{TXT_WHITE}'>"
                             f"<b>Disco {disco}</b> · Rueda {rueda}<br>"
                             f"↑ Sup: <b>{sup:.0f} kgf</b> &nbsp; ↓ Inf: <b>{inf:.0f} kgf</b><br>"
                             f"Balance: <b>{bal:.1f}%</b> &nbsp; {emoji} {estado}</div>",
@@ -352,8 +366,8 @@ def seccion_ruedas(df):
             fig.add_hline(y=prom, line_dash="dash", line_color=ROJO,
                           annotation_text=f"Prom: {prom:,.0f} kgf", annotation_position="top right")
             fig.update_traces(textposition="outside")
-            fig.update_layout(height=420, plot_bgcolor="white",
-                              yaxis=dict(gridcolor="#e0e0e0"), font=dict(family="Arial"), legend_title="")
+            fig.update_layout(**PLOTLY_LAYOUT, height=420, plot_bgcolor=BG_DARK,
+                              yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"), legend_title="")
             st.plotly_chart(fig, use_container_width=True)
             dfc["Desvío (%)"] = (dfc["total"]-prom)/prom*100
             dfc["Estado"] = dfc["Desvío (%)"].abs().apply(
@@ -406,8 +420,8 @@ def seccion_repetibilidad(df):
             fig.add_hline(y=CV_OK,   line_dash="dash", line_color="#1a9641", line_width=1)
             fig.add_hline(y=CV_WARN, line_dash="dash", line_color=NARANJA,   line_width=1)
             fig.update_traces(textposition="outside")
-            fig.update_layout(height=380, plot_bgcolor="white",
-                              yaxis=dict(gridcolor="#e0e0e0"),
+            fig.update_layout(**PLOTLY_LAYOUT, height=380, plot_bgcolor=BG_DARK,
+                              yaxis=dict(gridcolor="#2A2F45"),
                               font=dict(family="Arial"), showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
 
@@ -422,8 +436,8 @@ def seccion_serv_vs_emer(df):
                    markers=True,
                    labels={"total":"Fuerza media (kgf)","ud_label":"UD","condicion":"Condición"},
                    title="Fuerza media por UD — Servicio vs Emergencia")
-    fig.update_layout(height=380, plot_bgcolor="white",
-                      yaxis=dict(gridcolor="#e0e0e0"), font=dict(family="Arial"))
+    fig.update_layout(**PLOTLY_LAYOUT, height=380, plot_bgcolor=BG_DARK,
+                      yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"))
     st.plotly_chart(fig, use_container_width=True)
     pivot = comp.pivot(index="ud_label", columns="condicion", values="total").reset_index()
     if "Servicio" in pivot.columns and "Emergencia" in pivot.columns:
@@ -438,8 +452,8 @@ def seccion_serv_vs_emer(df):
                        annotation_text=f"Ratio presiones: {ratio_presiones:.2f}×",
                        annotation_position="top right")
         fig2.update_traces(textposition="outside")
-        fig2.update_layout(height=360, plot_bgcolor="white",
-                           yaxis=dict(gridcolor="#e0e0e0"), font=dict(family="Arial"))
+        fig2.update_layout(**PLOTLY_LAYOUT, height=360, plot_bgcolor=BG_DARK,
+                           yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"))
         st.plotly_chart(fig2, use_container_width=True)
         st.caption(
             "El ratio de fuerza medida debería aproximarse al ratio de presiones aplicadas "
@@ -494,7 +508,21 @@ def seccion_datos(df):
 # APP PRINCIPAL
 # ─────────────────────────────────────────────
 
+
+CSS_DARK = """
+<style>
+/* Tarjetas de balance */
+div[data-testid="stMarkdownContainer"] div { color: #FAFAFA; }
+/* Métricas */
+[data-testid="stMetricValue"] { color: #FAFAFA; }
+[data-testid="stMetricLabel"] { color: #A0A0B0; }
+/* Tablas */
+.stDataFrame { color: #FAFAFA; }
+</style>
+"""
+
 st.set_page_config(page_title="Tablero EDP — Frenos M27", page_icon="🚆", layout="wide")
+st.markdown(CSS_DARK, unsafe_allow_html=True)
 st.markdown(
     f"<div style='background:{AZUL};padding:18px 24px;border-radius:8px;margin-bottom:20px'>"
     f"<h2 style='color:white;margin:0'>🚆 Tablero EDP — Ensayo Dinámico de Presión de Freno</h2>"
