@@ -246,11 +246,10 @@ que explica los valores mayores a 1.0 m/s² que aparecen aquí.
         ))
 
     fig.update_layout(**PLOTLY_LAYOUT, barmode="group", height=380,
-        yaxis=dict(title="Distancia de parada (m)", gridcolor="#2A2F45"),
-        xaxis_title="Condición de carga",
-        font=dict(family="Arial"), legend_title="",
+        xaxis_title="Condición de carga", legend_title="",
         title="Distancia de parada — freno neumático puro (con tₑ = 3 s)"
     )
+    fig.update_yaxes(title_text="Distancia de parada (m)")
     st.plotly_chart(fig, use_container_width=True)
 
     # ── Comparación Mitre vs Sarmiento ───────────────────
@@ -366,8 +365,7 @@ def seccion_ruedas(df):
             fig.add_hline(y=prom, line_dash="dash", line_color=ROJO,
                           annotation_text=f"Prom: {prom:,.0f} kgf", annotation_position="top right")
             fig.update_traces(textposition="outside")
-            fig.update_layout(**PLOTLY_LAYOUT, height=420,
-                              yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"), legend_title="")
+            fig.update_layout(**PLOTLY_LAYOUT, height=420, legend_title="")
             st.plotly_chart(fig, use_container_width=True)
             dfc["Desvío (%)"] = (dfc["total"]-prom)/prom*100
             dfc["Estado"] = dfc["Desvío (%)"].abs().apply(
@@ -420,9 +418,7 @@ def seccion_repetibilidad(df):
             fig.add_hline(y=CV_OK,   line_dash="dash", line_color="#1a9641", line_width=1)
             fig.add_hline(y=CV_WARN, line_dash="dash", line_color=NARANJA,   line_width=1)
             fig.update_traces(textposition="outside")
-            fig.update_layout(**PLOTLY_LAYOUT, height=380,
-                              yaxis=dict(gridcolor="#2A2F45"),
-                              font=dict(family="Arial"), showlegend=False)
+            fig.update_layout(**PLOTLY_LAYOUT, height=380, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
 
 
@@ -436,8 +432,7 @@ def seccion_serv_vs_emer(df):
                    markers=True,
                    labels={"total":"Fuerza media (kgf)","ud_label":"UD","condicion":"Condición"},
                    title="Fuerza media por UD — Servicio vs Emergencia")
-    fig.update_layout(**PLOTLY_LAYOUT, height=380,
-                      yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"))
+    fig.update_layout(**PLOTLY_LAYOUT, height=380)
     st.plotly_chart(fig, use_container_width=True)
     pivot = comp.pivot(index="ud_label", columns="condicion", values="total").reset_index()
     if "Servicio" in pivot.columns and "Emergencia" in pivot.columns:
@@ -452,8 +447,7 @@ def seccion_serv_vs_emer(df):
                        annotation_text=f"Ratio presiones: {ratio_presiones:.2f}×",
                        annotation_position="top right")
         fig2.update_traces(textposition="outside")
-        fig2.update_layout(**PLOTLY_LAYOUT, height=360,
-                           yaxis=dict(gridcolor="#2A2F45"), font=dict(family="Arial"))
+        fig2.update_layout(**PLOTLY_LAYOUT, height=360)
         st.plotly_chart(fig2, use_container_width=True)
         st.caption(
             "El ratio de fuerza medida debería aproximarse al ratio de presiones aplicadas "
